@@ -1,0 +1,7 @@
+version: '3'
+services:
+  service1:
+    build: .
+    command: tail -F /dev/null # This keeps the container running
+    volumes:
+      - /Users/joshua/git/postgres-cmu:/home/postgres-cmu
