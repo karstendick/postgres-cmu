@@ -46,3 +46,6 @@ lib*.pc
 # CMU-DB
 .idea
 /build
+
+# VS Code
+.vscode
