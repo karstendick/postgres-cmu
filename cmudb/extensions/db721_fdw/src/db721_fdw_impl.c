@@ -12,12 +12,12 @@
 extern void db721_GetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
                                     Oid foreigntableid)
 {
-  // TODO(721): Write me!
   ForeignTable *foreignTable = NULL;
   ListCell *optionCell = NULL;
   char *filename = NULL;
   char *tablename = NULL;
 
+  // TODO(721): Write me!
   elog(LOG, "db721_GetForeignRelSize called");
 
   foreignTable = GetForeignTable(foreigntableid);
