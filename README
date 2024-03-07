@@ -4,4 +4,23 @@ https://15721.courses.cs.cmu.edu/spring2023/project1.html
 ```bash
 docker-compose up -d
 docker-compose exec service1 /bin/bash
+
+# In the container
+cd /home/postgres-cmu
+sudo ./cmudb/env/packages.sh
+
+# To compile and run postgres server
+su joshua
+./cmudb/env/local_postgres.sh
+
+# To run the postgres client in another terminal
+su joshua
+./cmudb/env/local_psql.sh
+
+# To generate data
+cd cmudb
+python3 extensions/db721_fdw/chicken_farm_gen.py
+
+# From the postgres client
+noisepage_db=# SELECT * FROM db721_farm;
 ```
