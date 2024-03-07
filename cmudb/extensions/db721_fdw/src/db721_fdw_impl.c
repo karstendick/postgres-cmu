@@ -24,29 +24,24 @@ ReadFromFile(FILE *file, uint64 offset, uint32 size)
 	StringInfo resultBuffer = makeStringInfo();
 	enlargeStringInfo(resultBuffer, size);
 	resultBuffer->len = size;
-  elog(LOG, "Initialized resultBuffer");
   if (size == 0)
   {
 		return resultBuffer;
 	}
-  elog(LOG, "size was not 0");
 
 	errno = 0;
 	fseekResult = fseeko(file, offset, SEEK_SET);
 	if (fseekResult != 0)
 	{
-    elog(LOG, "fseeko failed!");
 		ereport(ERROR, (errcode_for_file_access(),
 						errmsg("could not seek in file: %m")));
 	}
-  elog(LOG, "fseeko()ed");
 
 	freadResult = fread(resultBuffer->data, size, 1, file);
 	if (freadResult != 1)
 	{
 		ereport(ERROR, (errmsg("could not read enough data from file")));
 	}
-  elog(LOG, "fread()ed");
 
 	fileError = ferror(file);
 	if (fileError != 0)
@@ -54,7 +49,6 @@ ReadFromFile(FILE *file, uint64 offset, uint32 size)
 		ereport(ERROR, (errcode_for_file_access(),
 						errmsg("could not read file: %m")));
 	}
-  elog(LOG, "ferror was clean");
 
 	return resultBuffer;
 }
@@ -100,9 +94,7 @@ extern void db721_GetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
     ereport(ERROR, (errcode_for_file_access(),
                     errmsg("could not open file \"%s\": %m", filename)));
   }
-  elog(LOG, "file opened");
   metadataSizeBytes = ReadFromFile(file, stat_buf.st_size - METADATA_SIZE_OFFSET, METADATA_SIZE_OFFSET);
-  elog(LOG, "metadataSizeBytes: %s", metadataSizeBytes->data);
   metadataSize = *((uint32_t *)metadataSizeBytes->data);
 
   elog(LOG, "metadataSize: %"PRIu32, metadataSize);
