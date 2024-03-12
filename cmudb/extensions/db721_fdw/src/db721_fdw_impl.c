@@ -9,6 +9,7 @@
 #include "../../../../src/include/foreign/fdwapi.h"
 #include "../../../../src/include/foreign/foreign.h"
 #include "../../../../src/include/commands/defrem.h"
+#include "cJSON.h"
 // }
 // clang-format on
 
@@ -71,10 +72,13 @@ extern void db721_GetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
                                     Oid foreigntableid)
 {
   char *filename = NULL;
-  StringInfo metadataSizeBytes = NULL;
   struct stat stat_buf;
-  uint32_t metadataSize = 0;
   FILE *file = NULL;
+  uint32_t metadataSize = 0;
+  StringInfo metadataSizeBytes = NULL;
+  StringInfo metadataBytes = NULL;
+  char *json_str = NULL;
+  cJSON *json = NULL;
 
   // TODO(721): Write me!
   elog(LOG, "db721_GetForeignRelSize called");
@@ -98,8 +102,24 @@ extern void db721_GetForeignRelSize(PlannerInfo *root, RelOptInfo *baserel,
   metadataSize = *((uint32_t *)metadataSizeBytes->data);
 
   elog(LOG, "metadataSize: %"PRIu32, metadataSize);
+
+  metadataBytes = ReadFromFile(file, stat_buf.st_size - METADATA_SIZE_OFFSET - metadataSize, metadataSize);
+  elog(LOG, "metadata: %s", metadataBytes->data);
+
+  json = cJSON_Parse(metadataBytes->data);
+  if (json == NULL)
+  {
+    ereport(ERROR, (errmsg("could not parse metadata as JSON")));
+  }
+  
+  json_str = cJSON_Print(json);
+  
   pfree(metadataSizeBytes->data);
   pfree(metadataSizeBytes);
+  pfree(metadataBytes->data);
+  pfree(metadataBytes);
+  cJSON_Delete(json);
+  pfree(json_str);
 }
 
 extern void db721_GetForeignPaths(PlannerInfo *root, RelOptInfo *baserel,
